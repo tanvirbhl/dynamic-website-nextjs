@@ -43,10 +43,10 @@ export default async function DynamicPage({ params }: { params: Promise<{ slug: 
     .sort((a: any, b: any) => a.sortOrder - b.sortOrder);
 
   return (
-    <>
+    <main className="flex min-h-screen flex-col w-full">
       {activeSections.map((section: any) => (
         <SectionRenderer key={section._id.toString()} section={section} />
       ))}
-    </>
+    </main>
   );
 }
