@@ -39,7 +39,7 @@ export default async function DashboardPage() {
         </div>
         
         {/* The interactive drag-and-drop container */}
-        <SectionList initialSections={serializedSections} />
+        <SectionList pageId={homePage._id.toString()} initialSections={serializedSections} />
       </div>
     </div>
   );

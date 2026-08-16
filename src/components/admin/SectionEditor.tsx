@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form'; // <-- Added Controller
-import { X, Loader2, Save } from 'lucide-react';
+import { X, Loader2, Save, Trash2 } from 'lucide-react';
 import { updateSectionContent } from '@/actions/admin/sections';
 import { ImageUploadField } from './ImageUploadField'; // <-- Import our new widget
 
@@ -11,9 +11,10 @@ interface SectionEditorProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: (updatedSection: any) => void;
+  onDelete: (sectionId: string) => void;
 }
 
-export function SectionEditor({ section, isOpen, onClose, onSuccess }: SectionEditorProps) {
+export function SectionEditor({ section, isOpen, onClose, onSuccess, onDelete }: SectionEditorProps) {
   const [isSaving, setIsSaving] = useState(false);
   const { register, handleSubmit, control, reset, formState: { isDirty } } = useForm();
 
@@ -115,7 +116,19 @@ export function SectionEditor({ section, isOpen, onClose, onSuccess }: SectionEd
           </form>
         </div>
 
+        {/* Replace the old footer with this updated one */}
         <div className="p-4 border-t border-slate-100 bg-white flex gap-3">
+          <button 
+            type="button" 
+            onClick={() => {
+              if(confirm('Are you sure you want to delete this section?')) onDelete(section._id);
+            }} 
+            className="px-4 py-2 border border-red-100 text-red-600 bg-red-50 hover:bg-red-100 rounded-md transition-colors font-medium text-sm"
+            title="Delete Section"
+          >
+           
+            <Trash2 size={16} />
+          </button>
           <button type="button" onClick={onClose} className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-md hover:bg-slate-50 transition-colors font-medium text-sm">
             Cancel
           </button>

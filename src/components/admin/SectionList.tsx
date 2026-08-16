@@ -19,9 +19,15 @@ import {
 import { SortableSectionItem } from './SortableSectionItem';
 import { SectionEditor } from './SectionEditor';
 import { updateSectionOrder } from '@/actions/admin/reorder';
+import { createSection, deleteSection } from '@/actions/admin/sections';
 import { Loader2 } from 'lucide-react';
 
-export function SectionList({ initialSections }: { initialSections: any[] }) {
+interface SectionListProps {
+  pageId: string;
+  initialSections: any[];
+}
+
+export function SectionList({ pageId, initialSections }: SectionListProps) {
   const [sections, setSections] = useState(initialSections);
   const [isSaving, setIsSaving] = useState(false);
   const [editingSection, setEditingSection] = useState<any | null>(null);
@@ -63,6 +69,31 @@ export function SectionList({ initialSections }: { initialSections: any[] }) {
     }
   };
 
+  // Create a new section
+  const handleCreate = async (type: 'hero' | 'about') => {
+    setIsSaving(true);
+    const res = await createSection(pageId, type);
+    if (res.success) {
+      setSections([...sections, res.section]);
+    } else {
+      alert(res.error || `Failed to create ${type} section`);
+    }
+    setIsSaving(false);
+  };
+
+  // Delete an existing section
+  const handleDelete = async (sectionId: string) => {
+    setIsSaving(true);
+    const res = await deleteSection(sectionId);
+    if (res.success) {
+      setSections(sections.filter((s) => s._id !== sectionId));
+      setEditingSection(null); // Close the drawer if it's open
+    } else {
+      alert(res.error || 'Failed to delete section');
+    }
+    setIsSaving(false);
+  };
+
   return (
     <div className="relative">
       {/* Saving Overlay */}
@@ -70,7 +101,7 @@ export function SectionList({ initialSections }: { initialSections: any[] }) {
         <div className="absolute inset-0 bg-white/50 z-50 flex items-center justify-center backdrop-blur-[1px]">
           <div className="flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-md shadow-lg text-sm font-medium">
             <Loader2 className="w-4 h-4 animate-spin" />
-            Saving Order...
+            Saving...
           </div>
         </div>
       )}
@@ -94,6 +125,22 @@ export function SectionList({ initialSections }: { initialSections: any[] }) {
         </SortableContext>
       </DndContext>
 
+      {/* Creation Buttons */}
+      <div className="p-6 bg-slate-50 border-t border-slate-200 flex justify-center gap-4">
+        <button 
+          onClick={() => handleCreate('hero')} 
+          className="px-4 py-2 border border-slate-300 rounded-md text-sm font-medium hover:bg-white hover:text-[rgb(var(--color-primary))] transition-colors text-slate-600 bg-white shadow-sm flex items-center gap-2"
+        >
+          + Add Hero Section
+        </button>
+        <button 
+          onClick={() => handleCreate('about')} 
+          className="px-4 py-2 border border-slate-300 rounded-md text-sm font-medium hover:bg-white hover:text-[rgb(var(--color-primary))] transition-colors text-slate-600 bg-white shadow-sm flex items-center gap-2"
+        >
+          + Add About Section
+        </button>
+      </div>
+
       {/* Slide-Out Editor Drawer */}
       <SectionEditor 
         section={editingSection} 
@@ -103,6 +150,7 @@ export function SectionList({ initialSections }: { initialSections: any[] }) {
           // Instantly update the local state to reflect the saved changes
           setSections(sections.map(s => s._id === updatedSection._id ? updatedSection : s));
         }}
+        onDelete={handleDelete}
       />
     </div>
   );
