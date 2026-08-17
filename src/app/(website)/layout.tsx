@@ -1,30 +1,29 @@
 import Navigation from '@/components/website/Navigation';
+import dbConnect from '@/lib/db';
+import { Settings } from '@/models/Settings';
 
-// This forces Next.js to re-fetch the layout data periodically
 export const revalidate = 60; 
 
-export default function WebsiteLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function WebsiteLayout({ children }: { children: React.ReactNode }) {
+  await dbConnect();
+  
+  // Fetch settings for the footer
+  const settings = await Settings.findOne().lean() || { footerText: '© {year} All rights reserved.' };
+  
+  // Replace the {year} tag dynamically
+  const footerText = settings.footerText.replace('{year}', new Date().getFullYear().toString());
+
   return (
     <div className="flex flex-col min-h-screen bg-[var(--color-bg)]">
-      
-      {/* 
-        The Navigation component now handles its own data fetching 
-        and contains the proper <header> HTML structure.
-      */}
       <Navigation />
 
-      {/* Dynamic Page Content */}
       <main className="flex-grow">
         {children}
       </main>
 
-      {/* Footer Placeholder */}
+      {/* Dynamic Footer */}
       <footer className="bg-slate-900 text-white py-12 text-center">
-        <p>© {new Date().getFullYear()} Nova Industries PLC. All rights reserved.</p>
+        <p>{footerText}</p>
       </footer>
     </div>
   );

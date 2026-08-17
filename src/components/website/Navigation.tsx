@@ -1,21 +1,25 @@
 import Link from 'next/link';
 import dbConnect from '@/lib/db';
-import { Navigation } from '@/models/Navigation';
+import { Navigation as NavigationModel } from '@/models/Navigation';
+import { Settings } from '@/models/Settings';
 
-export default async function Header() {
+export default async function Navigation() {
   await dbConnect();
   
-  // 1. Fetch only visible navigation items, sorted by their configured order
-  const rawNavItems = await Navigation.find({ isVisible: true }).sort('sortOrder').lean();
+  // 1. Fetch Global Settings for the brand name and logo
+  const settings = await Settings.findOne().lean() || { brandName: 'NOVA INDUSTRIES', logoUrl: '' };
+
+  // 2. Fetch only visible navigation items, sorted by their configured order
+  const rawNavItems = await NavigationModel.find({ isVisible: true }).sort('sortOrder').lean();
   
-  // 2. Serialize MongoDB ObjectIds to strings
+  // 3. Serialize MongoDB ObjectIds to strings
   const navItems = rawNavItems.map((item: any) => ({
     ...item,
     _id: item._id.toString(),
     parentId: item.parentId ? item.parentId.toString() : null,
   }));
 
-  // 3. Separate top-level links from nested children
+  // 4. Separate top-level links from nested children
   const topLevelLinks = navItems.filter(item => !item.parentId);
   const getChildren = (parentId: string) => navItems.filter(item => item.parentId === parentId);
 
@@ -23,9 +27,19 @@ export default async function Header() {
     <header className="sticky top-0 z-50 w-full bg-white border-b border-slate-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
         
-        {/* Global Logo */}
-        <Link href="/" className="font-bold text-xl tracking-wider text-slate-900">
-          NOVA INDUSTRIES
+        {/* Dynamic Global Logo / Brand Name */}
+        <Link href="/" className="flex items-center gap-2">
+          {settings.logoUrl ? (
+            <img 
+              src={settings.logoUrl} 
+              alt={settings.brandName} 
+              className="h-8 w-auto object-contain" 
+            />
+          ) : (
+            <span className="font-bold text-xl tracking-wider text-slate-900 uppercase">
+              {settings.brandName}
+            </span>
+          )}
         </Link>
 
         {/* Dynamic Desktop Navigation */}
