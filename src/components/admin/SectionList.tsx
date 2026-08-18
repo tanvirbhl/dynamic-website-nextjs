@@ -70,7 +70,7 @@ export function SectionList({ pageId, initialSections }: SectionListProps) {
   };
 
   // Create a new section
-  const handleCreate = async (type: 'hero' | 'about') => {
+ const handleCreate = async (type: 'hero' | 'about' | 'RECENT_NOTICES') => {
     setIsSaving(true);
     const res = await createSection(pageId, type);
     if (res.success) {
@@ -138,6 +138,12 @@ export function SectionList({ pageId, initialSections }: SectionListProps) {
           className="px-4 py-2 border border-slate-300 rounded-md text-sm font-medium hover:bg-white hover:text-[rgb(var(--color-primary))] transition-colors text-slate-600 bg-white shadow-sm flex items-center gap-2"
         >
           + Add About Section
+        </button>
+        <button 
+          onClick={() => handleCreate('RECENT_NOTICES')} 
+          className="px-4 py-2 border border-amber-300 rounded-md text-sm font-medium hover:bg-white hover:text-amber-600 transition-colors text-amber-700 bg-amber-50 shadow-sm flex items-center gap-2"
+        >
+          + Add Latest Notices Feed
         </button>
       </div>
 

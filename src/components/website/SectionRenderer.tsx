@@ -1,5 +1,6 @@
 import { HeroSection } from './sections/HeroSection';
 import { AboutSection } from './sections/AboutSection';
+import { LatestNoticesFeed } from './sections/LatestNoticesFeed';
 
 interface SectionProps {
   section: {
@@ -21,9 +22,9 @@ export default function SectionRenderer({ section }: SectionProps) {
     case 'about':
       return <AboutSection content={section.content} />;
     
-    // Future sections will be added here:
-    // case 'businesses': return <BusinessesSection content={section.content} />
-    // case 'news': return <NewsSection content={section.content} />
+    
+    case 'RECENT_NOTICES': 
+      return <LatestNoticesFeed limit={3} />;
     
     default:
       // Graceful fallback for development; renders nothing in production

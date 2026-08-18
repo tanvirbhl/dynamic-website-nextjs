@@ -112,6 +112,12 @@ export function SectionEditor({ section, isOpen, onClose, onSuccess, onDelete }:
                 </div>
               </>
             )}
+            {section.type === 'RECENT_NOTICES' && (
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-sm">
+                <p className="font-bold mb-1">Dynamic Feed</p>
+                <p>This section automatically fetches and displays the latest published notices from your database. No manual text or image configuration is required here!</p>
+              </div>
+            )}
 
           </form>
         </div>
