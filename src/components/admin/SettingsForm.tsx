@@ -75,6 +75,51 @@ export function SettingsForm({ initialSettings }: { initialSettings: any }) {
             </div>
           </div>
 
+          {/* 👇 NEW: Contact Page Information Section 👇 */}
+          <div className="space-y-4 pt-4">
+            <h3 className="text-lg font-semibold text-slate-800 border-b pb-2">Contact Page Information</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Primary Phone</label>
+                <input 
+                  type="text" 
+                  {...register('contactPhone1')} 
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-md text-sm outline-none focus:border-[rgb(var(--color-primary))] focus:ring-1 focus:ring-[rgb(var(--color-primary))] transition-all" 
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Secondary Phone (Optional)</label>
+                <input 
+                  type="text" 
+                  {...register('contactPhone2')} 
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-md text-sm outline-none focus:border-[rgb(var(--color-primary))] focus:ring-1 focus:ring-[rgb(var(--color-primary))] transition-all" 
+                />
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Google Maps Embed URL</label>
+              <input 
+                type="text" 
+                {...register('googleMapsUrl')} 
+                placeholder="https://www.google.com/maps/embed?..."
+                className="w-full px-4 py-2.5 border border-slate-200 rounded-md text-sm outline-none focus:border-[rgb(var(--color-primary))] focus:ring-1 focus:ring-[rgb(var(--color-primary))] transition-all" 
+              />
+            </div>
+
+            <div className="pt-2">
+              <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Corporate Address</label>
+              <textarea 
+                {...register('contactAddress')} 
+                rows={3}
+                className="w-full px-4 py-2.5 border border-slate-200 rounded-md text-sm outline-none focus:border-[rgb(var(--color-primary))] focus:ring-1 focus:ring-[rgb(var(--color-primary))] transition-all resize-none" 
+              ></textarea>
+            </div>
+          </div>
+          {/* 👆 End of New Section 👆 */}
+
           {/* Footer Section */}
           <div className="space-y-4 pt-4">
             <h3 className="text-lg font-semibold text-slate-800 border-b pb-2">Footer Configuration</h3>

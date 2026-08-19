@@ -34,8 +34,9 @@ export async function updateGlobalSettings(data: any) {
       await Settings.create(data);
     }
     
-    // Purge the cache so the frontend header and footer update instantly
+    // Purge the cache so the frontend header, footer, and contact page update instantly
     revalidatePath('/', 'layout');
+    revalidatePath('/contact'); // 👈 ADDED THIS LINE
     
     return { success: true };
   } catch (error) {

@@ -3,7 +3,7 @@ import { auth, signOut } from '@/auth';
 import { 
   LayoutDashboard, Files, MenuSquare, Settings, 
   LogOut, Users, Building2, PackageSearch, 
-  Newspaper, ImageIcon 
+  Newspaper, ImageIcon, Mail 
 } from 'lucide-react';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -26,6 +26,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <SidebarLink href="/admin/dashboard" icon={<LayoutDashboard size={18} />} label="Overview" />
             
             <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 px-3 mt-6">Website</div>
+            <SidebarLink href="/admin/messages" icon={<Mail size={18} />} label="Inbox" />
             <SidebarLink href="/admin/pages" icon={<Files size={18} />} label="Pages" />
             <SidebarLink href="/admin/navigation" icon={<MenuSquare size={18} />} label="Navigation" />
             
