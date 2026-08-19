@@ -70,8 +70,7 @@ export function SectionList({ pageId, initialSections }: SectionListProps) {
   };
 
   // Create a new section
-const handleCreate = async (type: 'hero' | 'about' | 'RECENT_NOTICES' | 'LEADERSHIP_MESSAGE' | 'PARTNER_LOGOS') => {
-    setIsSaving(true);
+const handleCreate = async (type: 'hero' | 'about' | 'RECENT_NOTICES' | 'LEADERSHIP_MESSAGE' | 'PARTNER_LOGOS' | 'IMAGE_GALLERY' | 'CORE_VALUES') => {    setIsSaving(true);
     const res = await createSection(pageId, type);
     if (res.success) {
       setSections([...sections, res.section]);
@@ -156,6 +155,18 @@ const handleCreate = async (type: 'hero' | 'about' | 'RECENT_NOTICES' | 'LEADERS
           className="px-4 py-2 border border-slate-300 rounded-md text-sm font-medium hover:bg-slate-100 transition-colors text-slate-700 bg-white shadow-sm flex items-center gap-2"
         >
           + Add Partner Logos
+        </button>
+        <button 
+          onClick={() => handleCreate('IMAGE_GALLERY')} 
+          className="px-4 py-2 border border-purple-300 rounded-md text-sm font-medium hover:bg-white hover:text-purple-600 transition-colors text-purple-700 bg-purple-50 shadow-sm flex items-center gap-2"
+        >
+          + Add Image Gallery
+        </button>
+        <button 
+          onClick={() => handleCreate('CORE_VALUES')} 
+          className="px-4 py-2 border border-teal-300 rounded-md text-sm font-medium hover:bg-white hover:text-teal-600 transition-colors text-teal-700 bg-teal-50 shadow-sm flex items-center gap-2"
+        >
+          + Add Core Values
         </button>
       </div>
 

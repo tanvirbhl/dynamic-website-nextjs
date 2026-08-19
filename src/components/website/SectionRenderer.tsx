@@ -2,7 +2,9 @@ import { HeroSection } from "./sections/HeroSection";
 import { AboutSection } from "./sections/AboutSection";
 import { LatestNoticesFeed } from "./sections/LatestNoticesFeed";
 import { LeadershipMessage } from "./sections/LeadershipMessage";
-import { PartnerLogos } from './sections/PartnerLogos';
+import { PartnerLogos } from "./sections/PartnerLogos";
+import { ImageGallery } from "./sections/ImageGallery";
+import { CoreValues } from "./sections/CoreValues";
 
 interface SectionProps {
   section: {
@@ -28,9 +30,12 @@ export default function SectionRenderer({ section }: SectionProps) {
       return <LatestNoticesFeed limit={3} />;
     case "LEADERSHIP_MESSAGE":
       return <LeadershipMessage content={section.content} />;
-    case 'PARTNER_LOGOS':
+    case "PARTNER_LOGOS":
       return <PartnerLogos content={section.content} />;
-
+    case "IMAGE_GALLERY":
+      return <ImageGallery content={section.content} />;
+    case "CORE_VALUES":
+      return <CoreValues content={section.content} />;
     default:
       // Graceful fallback for development; renders nothing in production
       if (process.env.NODE_ENV === "development") {

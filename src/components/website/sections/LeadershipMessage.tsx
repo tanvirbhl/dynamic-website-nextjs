@@ -2,6 +2,7 @@ import { Quote } from 'lucide-react';
 
 interface LeadershipMessageProps {
   content: {
+    sectionTitle?: string; // <-- Added here
     name?: string;
     designation?: string;
     message?: string;
@@ -13,8 +14,8 @@ export function LeadershipMessage({ content }: LeadershipMessageProps) {
   if (!content) return null;
 
   return (
-    <section className="py-24 bg-white">
-      <div className=" mx-auto px-6">
+    <section className="py-24 bg-white border-y border-slate-100">
+      <div className="max-w-6xl mx-auto px-6">
         <div className="flex flex-col md:flex-row items-center gap-16">
           
           {/* Left: Portrait Image */}
@@ -37,15 +38,22 @@ export function LeadershipMessage({ content }: LeadershipMessageProps) {
 
           {/* Right: Message Content */}
           <div className="w-full md:w-7/12">
-            <Quote className="text-[rgb(var(--color-primary))] w-16 h-16 opacity-20 mb-6" />
+            {/* 👇 ADDED THE DYNAMIC TITLE HERE 👇 */}
+            {content.sectionTitle && (
+              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-8">
+                {content.sectionTitle}
+              </h2>
+            )}
             
-            <p className="text-2xl md:text-3xl leading-relaxed text-slate-800 font-medium mb-10 whitespace-pre-wrap">
+            <Quote className="text-[rgb(var(--color-primary))] w-12 h-12 opacity-20 mb-6" />
+            
+            <p className="text-xl md:text-2xl leading-relaxed text-slate-700 font-medium mb-10 whitespace-pre-wrap">
               {content.message || 'Enter the leadership message or vision statement here...'}
             </p>
             
-            <div>
+            <div className="border-l-4 border-[rgb(var(--color-primary))] pl-4">
               <h3 className="text-xl font-bold text-slate-900">{content.name || 'Leader Name'}</h3>
-              <p className="text-[rgb(var(--color-primary))] font-semibold mt-1">
+              <p className="text-slate-500 font-medium mt-1">
                 {content.designation || 'Designation'}
               </p>
             </div>
