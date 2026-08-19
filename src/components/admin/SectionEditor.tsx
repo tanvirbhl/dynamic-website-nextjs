@@ -118,6 +118,51 @@ export function SectionEditor({ section, isOpen, onClose, onSuccess, onDelete }:
                 <p>This section automatically fetches and displays the latest published notices from your database. No manual text or image configuration is required here!</p>
               </div>
             )}
+            {section.type === 'LEADERSHIP_MESSAGE' && (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <Field label="Leader Name" name="name" register={register} />
+                  <Field label="Designation" name="designation" register={register} />
+                </div>
+                
+                <Field label="Message / Quote" name="message" type="textarea" register={register} />
+                
+                <Controller
+                  name="image"
+                  control={control}
+                  render={({ field }) => (
+                    <ImageUploadField 
+                      label="Leader Portrait" 
+                      value={field.value} 
+                      onChange={field.onChange} 
+                    />
+                  )}
+                />
+              </>
+            )}
+
+            {section.type === 'PARTNER_LOGOS' && (
+              <>
+                <Field label="Section Heading (Optional, e.g., 'Trusted By')" name="heading" register={register} />
+                
+                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100">
+                  {[1, 2, 3, 4, 5, 6].map((num) => (
+                    <Controller
+                      key={num}
+                      name={`logo${num}`}
+                      control={control}
+                      render={({ field }) => (
+                        <ImageUploadField 
+                          label={`Logo ${num}`} 
+                          value={field.value} 
+                          onChange={field.onChange} 
+                        />
+                      )}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
 
           </form>
         </div>

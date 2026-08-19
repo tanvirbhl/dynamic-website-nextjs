@@ -70,7 +70,7 @@ export function SectionList({ pageId, initialSections }: SectionListProps) {
   };
 
   // Create a new section
- const handleCreate = async (type: 'hero' | 'about' | 'RECENT_NOTICES') => {
+const handleCreate = async (type: 'hero' | 'about' | 'RECENT_NOTICES' | 'LEADERSHIP_MESSAGE' | 'PARTNER_LOGOS') => {
     setIsSaving(true);
     const res = await createSection(pageId, type);
     if (res.success) {
@@ -144,6 +144,18 @@ export function SectionList({ pageId, initialSections }: SectionListProps) {
           className="px-4 py-2 border border-amber-300 rounded-md text-sm font-medium hover:bg-white hover:text-amber-600 transition-colors text-amber-700 bg-amber-50 shadow-sm flex items-center gap-2"
         >
           + Add Latest Notices Feed
+        </button>
+        <button 
+          onClick={() => handleCreate('LEADERSHIP_MESSAGE')} 
+          className="px-4 py-2 border border-blue-300 rounded-md text-sm font-medium hover:bg-white hover:text-blue-600 transition-colors text-blue-700 bg-blue-50 shadow-sm flex items-center gap-2"
+        >
+          + Add Leadership Message
+        </button>
+        <button 
+          onClick={() => handleCreate('PARTNER_LOGOS')} 
+          className="px-4 py-2 border border-slate-300 rounded-md text-sm font-medium hover:bg-slate-100 transition-colors text-slate-700 bg-white shadow-sm flex items-center gap-2"
+        >
+          + Add Partner Logos
         </button>
       </div>
 
