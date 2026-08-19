@@ -38,7 +38,6 @@ export function LeadershipMessage({ content }: LeadershipMessageProps) {
 
           {/* Right: Message Content */}
           <div className="w-full md:w-7/12">
-            {/* 👇 ADDED THE DYNAMIC TITLE HERE 👇 */}
             {content.sectionTitle && (
               <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-8">
                 {content.sectionTitle}

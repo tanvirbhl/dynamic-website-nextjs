@@ -44,6 +44,29 @@ export function NavigationEditor({ item, parentOptions, isOpen, onClose, onSucce
     setIsSaving(false);
   };
 
+  // 👇 ADDED THIS: Recursive function to build indented dropdown options
+  const renderOptions = (items: any[], parentId: string | null = null, depth: number = 0): React.ReactNode[] => {
+    // Find children for the current parent level
+    const children = items.filter(i => (i.parentId || null) === parentId);
+    let options: React.ReactNode[] = [];
+    
+    children.forEach(child => {
+      // Create visual indent (e.g., "— ", "—— ")
+      const prefix = depth > 0 ? '—'.repeat(depth) + ' ' : '';
+      
+      options.push(
+        <option key={child._id} value={child._id} disabled={item?._id === child._id}>
+          {prefix}{child.label}
+        </option>
+      );
+      
+      // Recursively fetch this child's children
+      options = [...options, ...renderOptions(items, child._id, depth + 1)];
+    });
+    
+    return options;
+  };
+
   return (
     <div className={`fixed inset-0 z-50 flex justify-end transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
       <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm" onClick={onClose} />
@@ -74,11 +97,8 @@ export function NavigationEditor({ item, parentOptions, isOpen, onClose, onSucce
               <label className="block text-xs font-semibold text-slate-600 uppercase mb-1">Parent Dropdown (Optional)</label>
               <select {...register('parentId')} className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm outline-none focus:border-[rgb(var(--color-primary))] bg-white">
                 <option value="">-- None (Top Level Menu) --</option>
-                {parentOptions.map(opt => (
-                  <option key={opt._id} value={opt._id} disabled={item?._id === opt._id}>
-                    {opt.label}
-                  </option>
-                ))}
+                {/* 👇 Call the recursive renderer here 👇 */}
+                {renderOptions(parentOptions)}
               </select>
             </div>
           </form>

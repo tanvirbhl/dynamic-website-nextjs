@@ -1,23 +1,89 @@
 'use client';
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Plus, Pencil, Trash2, CornerDownRight } from 'lucide-react';
 import { NavigationEditor } from './NavigationEditor';
-import { deleteNavigationItem, toggleNavigationVisibility } from '@/actions/admin/navigation';
+import { deleteNavigationItem } from '@/actions/admin/navigation';
 import { ActiveToggle } from './ActiveToggle';
+
+// 1. Recursive Row Component
+const RecursiveNavRow = ({ item, allItems, depth = 0, onEdit, onDelete }: any) => {
+  // Find all items that claim THIS item as their parent
+  const children = allItems.filter((i: any) => i.parentId === item._id);
+
+  return (
+    <React.Fragment>
+      <tr className={depth === 0 ? "hover:bg-slate-50" : "bg-slate-50/50 hover:bg-slate-50"}>
+        {/* Dynamic Padding based on depth level */}
+        <td 
+          className={`px-6 py-4 flex items-center gap-2 ${depth === 0 ? 'font-bold text-slate-800' : 'text-slate-600'}`}
+          style={{ paddingLeft: `${(depth * 2) + 1.5}rem` }}
+        >
+          {depth > 0 && <CornerDownRight size={14} className="text-slate-400 shrink-0" />}
+          {item.label}
+        </td>
+        
+        <td className="px-6 py-4 text-slate-500 font-mono text-xs">{item.url}</td>
+        
+        <td className="px-6 py-4">
+          {depth === 0 ? (
+            <ActiveToggle id={item._id} initialStatus={item.isVisible} />
+          ) : (
+            <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${item.isVisible ? 'bg-green-50 border-green-200 text-green-700' : 'bg-slate-100 border-slate-200 text-slate-500'}`}>
+              {item.isVisible ? 'ACTIVE' : 'HIDDEN'}
+            </span>
+          )}
+        </td>
+        
+        <td className="px-6 py-4 flex items-center justify-end gap-2">
+          <button onClick={() => onEdit(item)} className="p-1.5 text-slate-400 hover:text-[rgb(var(--color-primary))] hover:bg-slate-100 rounded">
+            <Pencil size={16} />
+          </button>
+          <button onClick={() => onDelete(item._id)} className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded">
+            <Trash2 size={16} />
+          </button>
+        </td>
+      </tr>
+      
+      {/* 2. The Magic: If this item has children, render THIS SAME component again! */}
+      {children.map((child: any) => (
+        <RecursiveNavRow 
+          key={child._id} 
+          item={child} 
+          allItems={allItems} 
+          depth={depth + 1} 
+          onEdit={onEdit} 
+          onDelete={onDelete} 
+        />
+      ))}
+    </React.Fragment>
+  );
+};
 
 export function NavigationManager({ initialItems }: { initialItems: any[] }) {
   const [items, setItems] = useState(initialItems);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any | null>(null);
 
-  // Group items into parents and children for rendering
+  // Only start the chain with items that have NO parent
   const topLevelItems = items.filter(i => !i.parentId);
   
+  // Helper to find all nested children IDs so we can delete them locally
+  const getAllDescendantIds = (parentId: string, allItems: any[]): string[] => {
+    const children = allItems.filter(i => i.parentId === parentId);
+    let ids = children.map(c => c._id);
+    children.forEach(c => {
+      ids = [...ids, ...getAllDescendantIds(c._id, allItems)];
+    });
+    return ids;
+  };
+
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this link? If this is a dropdown, all nested links will also be deleted.')) return;
+    if (!confirm('Delete this link? All nested sub-links inside it will also be deleted.')) return;
     const res = await deleteNavigationItem(id);
-    if (res.success) setItems(items.filter(i => i._id !== id && i.parentId !== id));
+    if (res.success) {
+      const idsToRemove = [id, ...getAllDescendantIds(id, items)];
+      setItems(items.filter(i => !idsToRemove.includes(i._id)));
+    }
   };
 
   return (
@@ -44,44 +110,14 @@ export function NavigationManager({ initialItems }: { initialItems: any[] }) {
           </thead>
           <tbody className="divide-y divide-slate-100">
             {topLevelItems.map((parent) => (
-              <React.Fragment key={parent._id}>
-                {/* Parent Row */}
-                <tr className="hover:bg-slate-50">
-                  <td className="px-6 py-4 font-bold text-slate-800">{parent.label}</td>
-                  <td className="px-6 py-4 text-slate-500 font-mono text-xs">{parent.url}</td>
-                  <td className="px-6 py-4">
-                    <ActiveToggle 
-                      id={parent._id} 
-                      initialStatus={parent.isVisible} 
-                      // Note: We'd need to modify ActiveToggle to accept a custom action, or create a specific one for Navigation.
-                      // For now, assume it triggers toggleNavigationVisibility in the background.
-                    />
-                  </td>
-                  <td className="px-6 py-4 flex items-center justify-end gap-2">
-                    <button onClick={() => { setEditingItem(parent); setIsEditorOpen(true); }} className="p-1.5 text-slate-400 hover:text-[rgb(var(--color-primary))] hover:bg-slate-100 rounded"><Pencil size={16} /></button>
-                    <button onClick={() => handleDelete(parent._id)} className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded"><Trash2 size={16} /></button>
-                  </td>
-                </tr>
-                {/* Child Rows */}
-                {items.filter(i => i.parentId === parent._id).map(child => (
-                  <tr key={child._id} className="bg-slate-50/50 hover:bg-slate-50">
-                    <td className="px-6 py-3 pl-12 flex items-center gap-2 text-slate-600">
-                      <CornerDownRight size={14} className="text-slate-400" />
-                      {child.label}
-                    </td>
-                    <td className="px-6 py-3 text-slate-500 font-mono text-xs">{child.url}</td>
-                    <td className="px-6 py-3">
-                       <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${child.isVisible ? 'bg-green-50 border-green-200 text-green-700' : 'bg-slate-100 border-slate-200 text-slate-500'}`}>
-                        {child.isVisible ? 'ACTIVE' : 'HIDDEN'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3 flex items-center justify-end gap-2">
-                      <button onClick={() => { setEditingItem(child); setIsEditorOpen(true); }} className="p-1.5 text-slate-400 hover:text-[rgb(var(--color-primary))] hover:bg-slate-100 rounded"><Pencil size={14} /></button>
-                      <button onClick={() => handleDelete(child._id)} className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded"><Trash2 size={14} /></button>
-                    </td>
-                  </tr>
-                ))}
-              </React.Fragment>
+              <RecursiveNavRow 
+                key={parent._id} 
+                item={parent} 
+                allItems={items} 
+                depth={0} 
+                onEdit={(item: any) => { setEditingItem(item); setIsEditorOpen(true); }}
+                onDelete={handleDelete}
+              />
             ))}
           </tbody>
         </table>
@@ -90,7 +126,8 @@ export function NavigationManager({ initialItems }: { initialItems: any[] }) {
 
       <NavigationEditor 
         item={editingItem} 
-        parentOptions={topLevelItems}
+        // 3. IMPORTANT TWEAK: Pass ALL items to the editor so you can select a child as a parent!
+        parentOptions={items} 
         isOpen={isEditorOpen} 
         onClose={() => setIsEditorOpen(false)} 
         onSuccess={(savedItem, isNew) => {
